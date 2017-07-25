@@ -36,45 +36,100 @@
 
 //ONE MORE REDUX EXAMPLE
 
-import { combineReducers, createStore } from "redux";
-
-const userReducer = (state={}, action) => {
-  switch(action.type) {
-    case "CHANGE_NAME": {
-      //state.name = action.payload;
-      state = {...state, name: action.payload}
-      break;
-    }
-    case "CHANGE_AGE": {
-      //state.age = action.payload;
-      state = {...state, age: action.payload}
-      break;
-    }
-  }
-  return state;
-};
-
-const tweetsReducer = (state=[], action) => {
-  return state;
-};
-
-const reducers = combineReducers({
-  user: userReducer,
-  tweets: tweetsReducer
-})
-
-const store = createStore(reducers);
-
-store.subscribe(() => {
-  console.log("Store Current Value: ", store.getState())
-})
-
-store.dispatch({type: "CHANGE_NAME", payload: "Niranjan"})
-store.dispatch({type: "CHANGE_AGE", payload: 38})
-store.dispatch({type: "CHANGE_AGE", payload: 36})
+// import { combineReducers, createStore } from "redux";
+//
+// const userReducer = (state={}, action) => {
+//   switch(action.type) {
+//     case "CHANGE_NAME": {
+//       //state.name = action.payload;
+//       state = {...state, name: action.payload}
+//       break;
+//     }
+//     case "CHANGE_AGE": {
+//       //state.age = action.payload;
+//       state = {...state, age: action.payload}
+//       break;
+//     }
+//   }
+//   return state;
+// };
+//
+// const tweetsReducer = (state=[], action) => {
+//   return state;
+// };
+//
+// const reducers = combineReducers({
+//   user: userReducer,
+//   tweets: tweetsReducer
+// })
+//
+// const store = createStore(reducers);
+//
+// store.subscribe(() => {
+//   console.log("Store Current Value: ", store.getState())
+// })
+//
+// store.dispatch({type: "CHANGE_NAME", payload: "Niranjan"})
+// store.dispatch({type: "CHANGE_AGE", payload: 38})
+// store.dispatch({type: "CHANGE_AGE", payload: 36})
 
 
 //=======================================================================================================
+
+
+//MIDDLEWARE REDUX EXAMPLE
+
+import { applyMiddleware, createStore } from "redux";
+
+const reducer = (initialState=0, action) => {
+  if (action.type === "INC") {
+    return initialState + 1;
+  } else if (action.type === "DEC") {
+    return initialState -1;
+  } else if (action.type === "E") {
+    throw new Error("ERROR!!!!!!!!!!!!!!!!");
+  }
+  return initialState;
+}
+
+const logger = (store) => (next) => (action) => {
+  console.log("Action Fired", action);
+  //action.type = "DEC";
+  //action.type = "INC";
+  next(action);
+}
+
+const error = (store) => (next) => (action) => {
+  try {
+    next(action);
+  } catch(e) {
+    console.log("ERROR!!!!!", e);
+  }
+}
+
+const middleware = applyMiddleware(logger, error);
+
+const store = createStore(reducer, 1, middleware); //later move 1 to reducer
+
+store.subscribe(() => {
+  console.log("Store Changed: ", store.getState())
+})
+
+store.dispatch({type: "INC"})
+store.dispatch({type: "INC"})
+store.dispatch({type: "INC"})
+store.dispatch({type: "DEC"})
+store.dispatch({type: "INC"})
+store.dispatch({type: "INC"})
+store.dispatch({type: "DEC"})
+store.dispatch({type: "DEC"})
+store.dispatch({type: "INC"})
+store.dispatch({type: "E"})
+
+
+
+//=======================================================================================================
+
 
 
 
