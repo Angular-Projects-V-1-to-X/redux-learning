@@ -1,3 +1,8 @@
+# Redux Tutorial
+
+Read through the code and try to build your own project with this step-by-step boiler-plate project.
+
+
 ## Instructions to run
 1. Navigate to folder */1-basic-react*
 2. *NPM install*
@@ -14,3 +19,6 @@
 * 7:10 webpack dev server --content-base src
 * 7:55 --Inline --hot (live reload)
 * 8:30 Creating a "dev" command in NPM
+
+
+Email me for any queries. Shall try my best to address them.
