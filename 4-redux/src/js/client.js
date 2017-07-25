@@ -74,57 +74,131 @@
 // store.dispatch({type: "CHANGE_AGE", payload: 36})
 
 
+// //=======================================================================================================
+//
+//
+// //MIDDLEWARE REDUX EXAMPLE
+//
+// import { applyMiddleware, createStore } from "redux";
+//
+// const reducer = (initialState=0, action) => {
+//   if (action.type === "INC") {
+//     return initialState + 1;
+//   } else if (action.type === "DEC") {
+//     return initialState -1;
+//   } else if (action.type === "E") {
+//     throw new Error("ERROR!!!!!!!!!!!!!!!!");
+//   }
+//   return initialState;
+// }
+//
+// const logger = (store) => (next) => (action) => {
+//   console.log("Action Fired", action);
+//   //action.type = "DEC";
+//   //action.type = "INC";
+//   next(action);
+// }
+//
+// const error = (store) => (next) => (action) => {
+//   try {
+//     next(action);
+//   } catch(e) {
+//     console.log("ERROR!!!!!", e);
+//   }
+// }
+//
+// const middleware = applyMiddleware(logger, error);
+//
+// const store = createStore(reducer, 1, middleware); //later move 1 to reducer
+//
+// store.subscribe(() => {
+//   console.log("Store Changed: ", store.getState())
+// })
+//
+// store.dispatch({type: "INC"})
+// store.dispatch({type: "INC"})
+// store.dispatch({type: "INC"})
+// store.dispatch({type: "DEC"})
+// store.dispatch({type: "INC"})
+// store.dispatch({type: "INC"})
+// store.dispatch({type: "DEC"})
+// store.dispatch({type: "DEC"})
+// store.dispatch({type: "INC"})
+// store.dispatch({type: "E"})
+
+
 //=======================================================================================================
 
 
-//MIDDLEWARE REDUX EXAMPLE
+//ASYNC ACTIONS REDUX EXAMPLE
 
 import { applyMiddleware, createStore } from "redux";
+import logger from "redux-logger";
+import thunk from "redux-thunk";
+import axios from "axios";
+import promise from "redux-promise-middleware";
 
-const reducer = (initialState=0, action) => {
-  if (action.type === "INC") {
-    return initialState + 1;
-  } else if (action.type === "DEC") {
-    return initialState -1;
-  } else if (action.type === "E") {
-    throw new Error("ERROR!!!!!!!!!!!!!!!!");
+
+const initialState = {
+  fetching: false,
+  fetched: false,
+  users: [],
+  error: null
+};
+
+const reducer = (state=initialState, action) => {
+  switch (action.type) {
+    case "FETCH_USERS_PENDING": {
+    //case "FETCH_USERS_START": {
+      return {
+        ...state,
+        fetching: true
+      }
+      break;
+    }
+    case "FETCH_USERS_REJECTED": {
+    //case "FETCH_USERS_ERROR": {
+      return {
+        ...state,
+        fetching: false,
+        error: action.payload
+      }
+      break;
+    }
+    case "FETCH_USERS_FULFILLED": {
+    //case "RECEIVE_USERS": {
+      return {
+        ...state,
+        fetching: false,
+        fetched: true,
+        users: action.payload
+      }
+      break;
+    }
   }
-  return initialState;
+  return state;
 }
 
-const logger = (store) => (next) => (action) => {
-  console.log("Action Fired", action);
-  //action.type = "DEC";
-  //action.type = "INC";
-  next(action);
-}
+const middleware = applyMiddleware(promise(), thunk, logger());
+const store = createStore(reducer, middleware);
 
-const error = (store) => (next) => (action) => {
-  try {
-    next(action);
-  } catch(e) {
-    console.log("ERROR!!!!!", e);
-  }
-}
-
-const middleware = applyMiddleware(logger, error);
-
-const store = createStore(reducer, 1, middleware); //later move 1 to reducer
-
-store.subscribe(() => {
-  console.log("Store Changed: ", store.getState())
+//store.dispatch({type: "FOO"})
+store.dispatch({
+  type: "FETCH_USERS",
+  payload: axios.get("http://rest.learncode.academy/api/wstern/users")
 })
 
-store.dispatch({type: "INC"})
-store.dispatch({type: "INC"})
-store.dispatch({type: "INC"})
-store.dispatch({type: "DEC"})
-store.dispatch({type: "INC"})
-store.dispatch({type: "INC"})
-store.dispatch({type: "DEC"})
-store.dispatch({type: "DEC"})
-store.dispatch({type: "INC"})
-store.dispatch({type: "E"})
+        // store.dispatch((dispatch) => {
+        //   dispatch({type: "FETCH_USERS_START"})
+        //   axios.get("http://rest.learncode.academy/api/wstern/users")
+        //   .then((response) => {
+        //   dispatch({type: "RECEIVE_USERS", payload: response.data})
+        //   })
+        //   .catch((err) => {
+        //     dispatch({type: "FETCH_USERS_ERROR", payload: err})
+        //   })
+        //   //do something ASYNC
+        // })
 
 
 
