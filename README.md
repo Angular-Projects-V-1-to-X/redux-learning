@@ -7,7 +7,7 @@ Read through the code and try to build your own project with this step-by-step b
 1. Navigate to folder */1-basic-react*
 2. *NPM install*
 3. *NPM run dev*
-4. Navigate to localhost:8080
+4. Navigate to localhost:8080 for all modules except "4-redux". For this module use "localhost:8081".
 
 ## Time stamps from
 * 0:50 Babel overview
